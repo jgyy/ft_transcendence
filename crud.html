@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database CRUD Operations Flow</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .operation-groups {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .operation-group {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .operation-group h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .operation {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .create { background-color: #d4edda; }
+        .read { background-color: #cce5ff; }
+        .update { background-color: #fff3cd; }
+        .delete { background-color: #f8d7da; }
+
+        .tables {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .table {
+            display: inline-block;
+            margin: 4px;
+            padding: 6px 12px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+            font-size: 0.9em;
+        }
+
+        .operation-type {
+            display: inline-block;
+            padding: 2px 6px;
+            margin-left: 6px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            background: #e9ecef;
+        }
+
+        .legend {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .legend h2 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Database CRUD Operations Flow</h1>
+
+        <div class="operation-groups">
+            <!-- User Management -->
+            <div class="operation-group">
+                <h2>User Management</h2>
+                <div class="operation create">
+                    <div>New User Registration</div>
+                    <div class="tables">
+                        <span class="table">users <span class="operation-type">CREATE</span></span>
+                        <span class="table">oauth_accounts <span class="operation-type">CREATE</span></span>
+                    </div>
+                </div>
+                <div class="operation read">
+                    <div>User Authentication</div>
+                    <div class="tables">
+                        <span class="table">users <span class="operation-type">READ</span></span>
+                        <span class="table">oauth_accounts <span class="operation-type">READ</span></span>
+                    </div>
+                </div>
+                <div class="operation delete">
+                    <div>Account Deletion</div>
+                    <div class="tables">
+                        <span class="table">users <span class="operation-type">DELETE</span></span>
+                        <span class="table">oauth_accounts <span class="operation-type">DELETE</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Operations -->
+            <div class="operation-group">
+                <h2>Game Operations</h2>
+                <div class="operation create">
+                    <div>New Match</div>
+                    <div class="tables">
+                        <span class="table">matches <span class="operation-type">CREATE</span></span>
+                        <span class="table">match_players <span class="operation-type">CREATE</span></span>
+                    </div>
+                </div>
+                <div class="operation update">
+                    <div>Update Match</div>
+                    <div class="tables">
+                        <span class="table">matches <span class="operation-type">UPDATE</span></span>
+                        <span class="table">game_stats <span class="operation-type">UPDATE</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tournament Operations -->
+            <div class="operation-group">
+                <h2>Tournament Operations</h2>
+                <div class="operation create">
+                    <div>New Tournament</div>
+                    <div class="tables">
+                        <span class="table">tournaments <span class="operation-type">CREATE</span></span>
+                        <span class="table">tournament_players <span class="operation-type">CREATE</span></span>
+                    </div>
+                </div>
+                <div class="operation update">
+                    <div>End Tournament</div>
+                    <div class="tables">
+                        <span class="table">tournaments <span class="operation-type">UPDATE</span></span>
+                        <span class="table">tournament_players <span class="operation-type">UPDATE</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat System -->
+            <div class="operation-group">
+                <h2>Chat System</h2>
+                <div class="operation create">
+                    <div>New Chat Room</div>
+                    <div class="tables">
+                        <span class="table">chat_rooms <span class="operation-type">CREATE</span></span>
+                        <span class="table">chat_participants <span class="operation-type">CREATE</span></span>
+                    </div>
+                </div>
+                <div class="operation create">
+                    <div>Send Message</div>
+                    <div class="tables">
+                        <span class="table">messages <span class="operation-type">CREATE</span></span>
+                    </div>
+                </div>
+                <div class="operation delete">
+                    <div>Delete Message</div>
+                    <div class="tables">
+                        <span class="table">messages <span class="operation-type">DELETE</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievement System -->
+            <div class="operation-group">
+                <h2>Achievement System</h2>
+                <div class="operation read">
+                    <div>Check Achievement</div>
+                    <div class="tables">
+                        <span class="table">achievements <span class="operation-type">READ</span></span>
+                    </div>
+                </div>
+                <div class="operation create">
+                    <div>Unlock Achievement</div>
+                    <div class="tables">
+                        <span class="table">user_achievements <span class="operation-type">CREATE</span></span>
+                        <span class="table">game_stats <span class="operation-type">UPDATE</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <h2>Legend</h2>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #d4edda;"></div>
+                    <span>CREATE Operation</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #cce5ff;"></div>
+                    <span>READ Operation</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #fff3cd;"></div>
+                    <span>UPDATE Operation</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f8d7da;"></div>
+                    <span>DELETE Operation</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
