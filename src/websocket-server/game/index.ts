@@ -1,9 +1,7 @@
-// Game Engine Exports
 export { PongGame, createGame, type GameMode, type GameInput, type GameEventHandler } from './engine'
 export { type BallState, type PaddleState, type PlayerState, type GameStateData } from './state'
 export { PongAI, createAI, AIStrategies, type AIDifficulty } from './ai'
 
-// Physics exports
 export {
   updateBallPhysics,
   updatePaddlePhysics,
@@ -23,7 +21,6 @@ export {
   decelerateBall,
 } from './physics'
 
-// Collision detection exports
 export {
   isBallOutOfBounds,
   getBallOutSide,
@@ -41,7 +38,6 @@ export {
   type CollisionResult,
 } from './collision'
 
-// State management exports
 export {
   initializeBall,
   initializePaddle,

@@ -127,9 +127,6 @@ export function handleWallCollision(ball: BallState): void {
   }
 }
 
-/**
- * Check all collisions and return results
- */
 export function checkAllCollisions(
   gameState: GameStateData
 ): {
@@ -142,9 +139,6 @@ export function checkAllCollisions(
   }
 }
 
-/**
- * Handle all collisions
- */
 export function handleAllCollisions(gameState: GameStateData): void {
   const collisions = checkAllCollisions(gameState)
 
@@ -157,9 +151,6 @@ export function handleAllCollisions(gameState: GameStateData): void {
   }
 }
 
-/**
- * Predict ball position at given time in future
- */
 export function predictBallPosition(
   ball: BallState,
   deltaTime: number
@@ -170,9 +161,6 @@ export function predictBallPosition(
   }
 }
 
-/**
- * Calculate distance from ball to paddle
- */
 export function getDistanceToPaddle(
   ball: BallState,
   paddle: PaddleState
