@@ -11,7 +11,6 @@ import {
   GAME_STATUS,
 } from '@/lib/game-constants'
 
-// Game state interfaces
 export interface BallState {
   x: number
   y: number
@@ -52,9 +51,6 @@ export interface GameStateData {
   settings: typeof DEFAULT_GAME_SETTINGS
 }
 
-/**
- * Initialize ball state at center of canvas
- */
 export function initializeBall(speedMultiplier: number = 1): BallState {
   const speed = BALL_INITIAL_SPEED * speedMultiplier
 
@@ -68,9 +64,6 @@ export function initializeBall(speedMultiplier: number = 1): BallState {
   }
 }
 
-/**
- * Initialize paddle at starting position
- */
 export function initializePaddle(
   isPlayer2: boolean,
   speedMultiplier: number = 1
@@ -85,9 +78,6 @@ export function initializePaddle(
   }
 }
 
-/**
- * Initialize player state
- */
 export function initializePlayer(
   id: string,
   username: string,
@@ -106,9 +96,6 @@ export function initializePlayer(
   }
 }
 
-/**
- * Initialize complete game state
- */
 export function initializeGameState(
   gameId: string,
   player1Id: string,
@@ -118,7 +105,6 @@ export function initializeGameState(
   settings: typeof DEFAULT_GAME_SETTINGS = DEFAULT_GAME_SETTINGS,
   isAIGame: boolean = false
 ): GameStateData {
-  // Apply settings multipliers
   const ballSpeedMultiplier = 0.6 + (settings.ballSpeed * 0.1)
   const paddleSpeedMultiplier = 0.6 + (settings.paddleSpeed * 0.1)
 
@@ -137,27 +123,20 @@ export function initializeGameState(
   }
 }
 
-/**
- * Reset ball position after scoring
- */
 export function resetBall(
   gameState: GameStateData,
-  scoringTeam: number // 0 or 1
+  scoringTeam: number
 ): BallState {
   const speedMultiplier = gameState.settings.ballSpeed ?
     0.6 + (gameState.settings.ballSpeed * 0.1) : 1
 
   const ball = initializeBall(speedMultiplier)
 
-  // Ball moves toward player who scored
   ball.velocityX = BALL_INITIAL_SPEED * speedMultiplier * (scoringTeam === 0 ? -1 : 1)
 
   return ball
 }
 
-/**
- * Serialize game state for transmission
- */
 export function serializeGameState(gameState: GameStateData): string {
   return JSON.stringify({
     gameId: gameState.gameId,
@@ -176,9 +155,6 @@ export function serializeGameState(gameState: GameStateData): string {
   })
 }
 
-/**
- * Clone game state for modification
- */
 export function cloneGameState(gameState: GameStateData): GameStateData {
   return {
     gameId: gameState.gameId,
@@ -198,9 +174,6 @@ export function cloneGameState(gameState: GameStateData): GameStateData {
   }
 }
 
-/**
- * Get player by ID
- */
 export function getPlayerById(
   gameState: GameStateData,
   playerId: string
@@ -208,9 +181,6 @@ export function getPlayerById(
   return gameState.players.find((p) => p.id === playerId) || null
 }
 
-/**
- * Get opponent player
- */
 export function getOpponent(
   gameState: GameStateData,
   playerId: string
@@ -222,9 +192,6 @@ export function getOpponent(
   return gameState.players[playerIndex === 0 ? 1 : 0] || null
 }
 
-/**
- * Update paddle position within bounds
- */
 export function updatePaddlePosition(
   paddle: PaddleState,
   deltaTime: number
@@ -237,39 +204,24 @@ export function updatePaddlePosition(
   }
 }
 
-/**
- * Get paddle center Y for collision calculations
- */
 export function getPaddleCenter(paddle: PaddleState): number {
   return paddle.y + paddle.height / 2
 }
 
-/**
- * Check if ball is on left side
- */
 export function isBallOnLeftSide(gameState: GameStateData): boolean {
   return gameState.ball.x < CANVAS_WIDTH / 2
 }
 
-/**
- * Check if ball is on right side
- */
 export function isBallOnRightSide(gameState: GameStateData): boolean {
   return gameState.ball.x >= CANVAS_WIDTH / 2
 }
 
-/**
- * Get game winner if applicable
- */
 export function getGameWinner(gameState: GameStateData, maxScore: number): number | null {
   if (gameState.score[0] >= maxScore) return 0
   if (gameState.score[1] >= maxScore) return 1
   return null
 }
 
-/**
- * Calculate game duration in seconds
- */
 export function getGameDuration(startTime: number): number {
   return Math.floor((Date.now() - startTime) / 1000)
 }

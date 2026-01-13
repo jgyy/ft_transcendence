@@ -28,6 +28,7 @@ model User {
   winStreak     Int       @default(0)
   highestStreak Int       @default(0)
   ranking       Int       @default(0)
+  gamePreferences Json?
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -43,7 +44,8 @@ model User {
   gameResults            GameResult[]
   gamesWon               Game[]       @relation("GameWinner")
 
-  tournamentsCreated     Tournament[] @relation("TournamentCreator")
+  tournamentsOrganized   Tournament[] @relation("TournamentOrganizer")
+  tournamentsWon         Tournament[] @relation("TournamentWinner")
   tournamentParticipants TournamentParticipant[]
 
   matchParticipants      MatchParticipant[]
@@ -188,23 +190,26 @@ model Tournament {
   id           String           @id @default(cuid())
   name         String
   description  String?
-  creatorId    String
-  maxPlayers   Int              @default(8)
+  organizerId  String
+  maxParticipants Int           @default(8)
   status       TournamentStatus @default(REGISTRATION)
   bracketType  BracketType      @default(SINGLE_ELIMINATION)
 
-  startDate    DateTime?
-  endDate      DateTime?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  gameSettings Json?
 
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 
-  creator      User                      @relation("TournamentCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  organizer    User                      @relation("TournamentOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
+  winner       User?                     @relation("TournamentWinner", fields: [winnerId], references: [id], onDelete: SetNull)
+  winnerId     String?
   participants TournamentParticipant[]
   matches      Match[]
   games        Game[]
 
-  @@index([creatorId])
+  @@index([organizerId])
   @@index([status])
   @@index([createdAt])
 }

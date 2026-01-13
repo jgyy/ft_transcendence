@@ -1,4 +1,3 @@
-// User types
 export interface User {
   id: string
   email: string
@@ -25,16 +24,15 @@ export interface UserProfile extends User {
   totalGames: number
 }
 
-// Game types
 export type GameMode = 'SINGLE_PLAYER' | 'MULTIPLAYER' | 'TOURNAMENT'
 export type GameStatus = 'WAITING' | 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED'
 
 export interface GameSettings {
-  ballSpeed: number // 1-5
-  ballSize: number // 1-3
-  paddleSpeed: number // 1-5
-  paddleSize: number // 1-3
-  maxScore: number // 5, 7, 11, 15, 21
+  ballSpeed: number
+  ballSize: number
+  paddleSpeed: number
+  paddleSize: number
+  maxScore: number
   powerUpsEnabled: boolean
   theme: 'classic' | 'neon' | 'retro' | 'space'
   soundEnabled: boolean
@@ -93,7 +91,6 @@ export interface PaddleState {
   velocityY: number
 }
 
-// Tournament types
 export type TournamentStatus = 'REGISTRATION' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
 export type BracketType = 'SINGLE_ELIMINATION' | 'DOUBLE_ELIMINATION'
 export type MatchStatus = 'PENDING' | 'READY' | 'IN_PROGRESS' | 'COMPLETED'
@@ -138,7 +135,6 @@ export interface MatchParticipant {
   user?: User
 }
 
-// Friendship types
 export type FriendshipStatus = 'PENDING' | 'ACCEPTED' | 'BLOCKED'
 
 export interface Friendship {
@@ -152,11 +148,10 @@ export interface Friendship {
   addressee?: User
 }
 
-// Notification types
 export interface Notification {
   id: string
   userId: string
-  type: string // 'friend_request', 'game_result', 'tournament_invite', etc.
+  type: string
   title: string
   message: string
   data?: Record<string, any> | null
@@ -164,7 +159,6 @@ export interface Notification {
   createdAt: Date
 }
 
-// WebSocket event types
 export interface WebSocketMessage {
   type: string
   data: unknown
@@ -181,7 +175,6 @@ export interface PlayerInput {
   input: GameMoveInput
 }
 
-// Statistics types
 export interface UserStatistics {
   totalGames: number
   wins: number
@@ -205,7 +198,6 @@ export interface LeaderboardEntry {
   lastGameDate: Date
 }
 
-// API Response types
 export interface ApiResponse<T> {
   success: boolean
   data?: T
@@ -221,7 +213,6 @@ export interface PaginatedResponse<T> {
   totalPages: number
 }
 
-// Session types (for NextAuth)
 export interface Session {
   user: {
     id: string

@@ -6,7 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "ws": "node --loader ts-node/esm src/websocket-server/server.ts",
+    "ws:dev": "node --watch --loader ts-node/esm src/websocket-server/server.ts",
+    "docker:start": "./scripts/docker-setup.sh start",
+    "docker:stop": "./scripts/docker-setup.sh stop",
+    "docker:logs": "./scripts/docker-setup.sh logs",
+    "docker:migrate": "./scripts/docker-setup.sh migrate",
+    "docker:seed": "./scripts/docker-setup.sh seed",
+    "docker:shell": "./scripts/docker-setup.sh shell"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -36,6 +44,7 @@
     "eslint-config-next": "16.1.1",
     "prisma": "^7.2.0",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

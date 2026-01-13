@@ -3,15 +3,12 @@ import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
-/**
- * GET /api/users/[id] - Get user profile with statistics
- */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = params.id
+    const { id: userId } = await params
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -44,11 +41,9 @@ export async function GET(
       )
     }
 
-    // Get total games
     const totalGames = user.wins + user.losses + user.draws
     const winRate = totalGames > 0 ? Math.round((user.wins / totalGames) * 100) : 0
 
-    // Get recent games
     const recentGames = await prisma.game.findMany({
       where: {
         OR: [{ playerOneId: userId }, { playerTwoId: userId }],
@@ -93,14 +88,12 @@ export async function GET(
   }
 }
 
-/**
- * PATCH /api/users/[id] - Update user profile
- */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user?.id) {
@@ -110,8 +103,7 @@ export async function PATCH(
       )
     }
 
-    // Only allow users to update their own profile
-    if (session.user.id !== params.id) {
+    if (session.user.id !== id) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
         { status: 403 }
@@ -120,7 +112,6 @@ export async function PATCH(
 
     const body = await request.json()
 
-    // Only allow specific fields to be updated
     const allowedFields = ['displayName', 'bio', 'avatarUrl']
     const updateData: any = {}
 
@@ -130,7 +121,6 @@ export async function PATCH(
       }
     }
 
-    // Validate inputs
     if (updateData.displayName && updateData.displayName.length > 100) {
       return NextResponse.json(
         { success: false, error: 'Display name too long' },
@@ -146,7 +136,7 @@ export async function PATCH(
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...updateData,
         updatedAt: new Date(),

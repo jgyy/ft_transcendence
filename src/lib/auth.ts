@@ -7,13 +7,43 @@ import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 
+// Extend NextAuth types to include custom session properties
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string
+      username: string
+      email: string
+      name?: string | null
+      image?: string | null
+    }
+  }
+
+  interface User {
+    id: string
+    email: string
+    username: string
+    image?: string
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id: string
+    username: string
+    email: string
+    picture?: string
+    provider?: string
+  }
+}
+
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 })
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as any,
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -55,7 +85,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           username: user.username,
-          image: user.avatarUrl,
+          image: user.avatarUrl || undefined,
           name: user.displayName || user.username,
         }
       },
@@ -109,7 +139,7 @@ export const authOptions: NextAuthOptions = {
           token.id = dbUser.id
           token.username = dbUser.username
           token.email = dbUser.email
-          token.picture = dbUser.avatarUrl
+          token.picture = dbUser.avatarUrl || undefined
         }
       }
 

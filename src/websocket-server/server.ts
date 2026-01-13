@@ -5,7 +5,6 @@ import { prisma } from '@/lib/prisma'
 import jwt from 'jsonwebtoken'
 import { DEFAULT_GAME_SETTINGS } from '@/lib/game-constants'
 
-// Type definitions
 interface AuthSocket extends Socket {
   userId?: string
   username?: string
@@ -31,10 +30,6 @@ interface QueueEntry {
   timestamp: number
 }
 
-/**
- * WebSocket Server for Pong Game
- * Handles real-time multiplayer gameplay
- */
 export class PongWebSocketServer {
   private io: Server
   private games: Map<string, GameRoom> = new Map()
@@ -64,9 +59,6 @@ export class PongWebSocketServer {
     })
   }
 
-  /**
-   * Setup authentication middleware
-   */
   private setupMiddleware(): void {
     this.io.use(async (socket: any, next) => {
       try {
@@ -76,7 +68,6 @@ export class PongWebSocketServer {
           return next(new Error('Authentication required'))
         }
 
-        // Verify JWT token
         const decoded = jwt.verify(
           token,
           process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'dev-secret'
@@ -85,7 +76,6 @@ export class PongWebSocketServer {
         socket.userId = decoded.userId || decoded.id
         socket.username = decoded.username
 
-        // Verify user exists in database
         const user = await prisma.user.findUnique({
           where: { id: socket.userId },
           select: { id: true, username: true, email: true },
@@ -104,9 +94,6 @@ export class PongWebSocketServer {
     })
   }
 
-  /**
-   * Setup event handlers
-   */
   private setupEventHandlers(): void {
     this.io.on('connection', (socket: AuthSocket) => {
       console.log(
@@ -116,18 +103,15 @@ export class PongWebSocketServer {
       this.userSockets.set(socket.userId!, socket)
       this.onlinePlayers.add(socket.userId!)
 
-      // Notify others that user is online
       this.io.emit('player:online', {
         userId: socket.userId,
         username: socket.username,
       })
 
-      // Handle player inputs
       socket.on('game:move', (data: GameInput) => {
         this.handleGameMove(socket, data)
       })
 
-      // Handle matchmaking queue
       socket.on('queue:join', (data) => {
         this.handleQueueJoin(socket, data)
       })
@@ -136,7 +120,6 @@ export class PongWebSocketServer {
         this.handleQueueLeave(socket)
       })
 
-      // Handle game events
       socket.on('game:join', (data) => {
         this.handleGameJoin(socket, data)
       })
@@ -157,7 +140,6 @@ export class PongWebSocketServer {
         this.handleGameResume(socket, data)
       })
 
-      // Handle tournament events
       socket.on('tournament:join', (data) => {
         this.handleTournamentJoin(socket, data)
       })
@@ -166,7 +148,6 @@ export class PongWebSocketServer {
         this.handleTournamentLeave(socket, data)
       })
 
-      // Handle disconnect
       socket.on('disconnect', () => {
         this.handleDisconnect(socket)
       })
@@ -177,11 +158,7 @@ export class PongWebSocketServer {
     })
   }
 
-  /**
-   * Handle player game movement
-   */
   private handleGameMove(socket: AuthSocket, data: GameInput): void {
-    // Find game this player is in
     for (const [gameId, room] of this.games) {
       if (
         room.player1Id === socket.userId ||
@@ -199,9 +176,6 @@ export class PongWebSocketServer {
     }
   }
 
-  /**
-   * Handle queue join for matchmaking
-   */
   private handleQueueJoin(
     socket: AuthSocket,
     data: { mode: GameMode; settings?: typeof DEFAULT_GAME_SETTINGS }
@@ -216,19 +190,14 @@ export class PongWebSocketServer {
       timestamp: Date.now(),
     })
 
-    // Notify user they're in queue
     socket.emit('queue:joined', {
       mode: data.mode,
       position: this.gameQueue.size,
     })
 
-    // Try to match players
     this.tryMatchmaking(data.mode)
   }
 
-  /**
-   * Handle queue leave
-   */
   private handleQueueLeave(socket: AuthSocket): void {
     const modes: GameMode[] = ['SINGLE_PLAYER', 'MULTIPLAYER', 'TOURNAMENT']
 
@@ -240,12 +209,8 @@ export class PongWebSocketServer {
     socket.emit('queue:left')
   }
 
-  /**
-   * Try to match players in queue
-   */
   private tryMatchmaking(mode: GameMode): void {
     if (mode === 'SINGLE_PLAYER') {
-      // Single player - create game immediately with AI
       const queueEntries = Array.from(this.gameQueue.values()).filter(
         (e) => e.mode === 'SINGLE_PLAYER'
       )
@@ -263,7 +228,6 @@ export class PongWebSocketServer {
           true
         )
 
-        // Notify player
         const socket = this.userSockets.get(entry.userId)
         if (socket) {
           socket.emit('queue:matched', {
@@ -278,17 +242,14 @@ export class PongWebSocketServer {
           socket.join(gameId)
         }
 
-        // Remove from queue
         const queueKey = `${entry.userId}-SINGLE_PLAYER`
         this.gameQueue.delete(queueKey)
       }
     } else if (mode === 'MULTIPLAYER') {
-      // Multiplayer - need 2 players
       const queueEntries = Array.from(this.gameQueue.values()).filter(
         (e) => e.mode === 'MULTIPLAYER'
       )
 
-      // Match in pairs
       for (let i = 0; i < queueEntries.length - 1; i += 2) {
         const player1 = queueEntries[i]
         const player2 = queueEntries[i + 1]
@@ -304,7 +265,6 @@ export class PongWebSocketServer {
           player1.settings
         )
 
-        // Notify both players
         const socket1 = this.userSockets.get(player1.userId)
         const socket2 = this.userSockets.get(player2.userId)
 
@@ -330,7 +290,6 @@ export class PongWebSocketServer {
           socket2.join(gameId)
         }
 
-        // Remove from queue
         const key1 = `${player1.userId}-MULTIPLAYER`
         const key2 = `${player2.userId}-MULTIPLAYER`
         this.gameQueue.delete(key1)
@@ -339,9 +298,6 @@ export class PongWebSocketServer {
     }
   }
 
-  /**
-   * Handle player joining an existing game
-   */
   private handleGameJoin(
     socket: AuthSocket,
     data: { gameId: string }
@@ -352,7 +308,6 @@ export class PongWebSocketServer {
       return
     }
 
-    // Add to spectators if not a player
     if (
       room.player1Id !== socket.userId &&
       room.player2Id !== socket.userId
@@ -362,13 +317,9 @@ export class PongWebSocketServer {
 
     socket.join(data.gameId)
 
-    // Send current game state
     socket.emit('game:state', room.game.getSerializedState())
   }
 
-  /**
-   * Handle player ready
-   */
   private handleGameReady(socket: AuthSocket, data: { gameId: string }): void {
     const room = this.games.get(data.gameId)
     if (!room) return
@@ -385,7 +336,6 @@ export class PongWebSocketServer {
     const gameState = room.game.getState()
     gameState.players[playerIndex].isReady = true
 
-    // Check if both players ready
     if (gameState.players.every((p) => p.isReady)) {
       room.status = 'ready'
       room.game.start()
@@ -401,27 +351,19 @@ export class PongWebSocketServer {
     }
   }
 
-  /**
-   * Handle player leaving game
-   */
   private handleGameLeave(socket: AuthSocket, data: { gameId: string }): void {
     const room = this.games.get(data.gameId)
     if (!room) return
 
     if (room.player1Id === socket.userId || room.player2Id === socket.userId) {
-      // Player forfeiting
       room.game.forfeit(socket.userId!)
     } else {
-      // Spectator leaving
       room.spectators.delete(socket.userId!)
     }
 
     socket.leave(data.gameId)
   }
 
-  /**
-   * Handle game pause
-   */
   private handleGamePause(socket: AuthSocket, data: { gameId: string }): void {
     const room = this.games.get(data.gameId)
     if (!room) return
@@ -432,9 +374,6 @@ export class PongWebSocketServer {
     })
   }
 
-  /**
-   * Handle game resume
-   */
   private handleGameResume(socket: AuthSocket, data: { gameId: string }): void {
     const room = this.games.get(data.gameId)
     if (!room) return
@@ -443,9 +382,6 @@ export class PongWebSocketServer {
     this.io.to(data.gameId).emit('game:resumed')
   }
 
-  /**
-   * Handle tournament join
-   */
   private handleTournamentJoin(
     socket: AuthSocket,
     data: { tournamentId: string }
@@ -459,9 +395,6 @@ export class PongWebSocketServer {
       })
   }
 
-  /**
-   * Handle tournament leave
-   */
   private handleTournamentLeave(
     socket: AuthSocket,
     data: { tournamentId: string }
@@ -475,40 +408,31 @@ export class PongWebSocketServer {
       })
   }
 
-  /**
-   * Handle disconnect
-   */
   private handleDisconnect(socket: AuthSocket): void {
     console.log(`[WebSocket] User disconnected: ${socket.username}`)
 
     this.userSockets.delete(socket.userId!)
     this.onlinePlayers.delete(socket.userId!)
 
-    // Notify others
     this.io.emit('player:offline', {
       userId: socket.userId,
       username: socket.username,
     })
 
-    // Handle forfeiture if in game
     for (const [gameId, room] of this.games) {
       if (
         room.player1Id === socket.userId ||
         room.player2Id === socket.userId
       ) {
-        // Auto-forfeit after timeout
         setTimeout(() => {
           if (!this.userSockets.has(socket.userId!)) {
             room.game.forfeit(socket.userId!)
           }
-        }, 30000) // 30 second grace period
+        }, 30000)
       }
     }
   }
 
-  /**
-   * Create a new game
-   */
   private createGame(
     gameId: string,
     player1Id: string,
@@ -544,7 +468,6 @@ export class PongWebSocketServer {
       room.ai = new (require('./game').PongAI)('MEDIUM')
     }
 
-    // Setup game event handlers
     game.setHandlers({
       onStateUpdate: (state) => {
         this.io.to(gameId).emit('game:state', JSON.stringify(state))
@@ -563,7 +486,6 @@ export class PongWebSocketServer {
           stats,
         })
 
-        // Save game to database
         this.saveGameToDatabase(gameId, game.getState(), stats)
           .catch((err) => console.error('[WebSocket] Error saving game:', err))
       },
@@ -576,12 +498,8 @@ export class PongWebSocketServer {
     return game
   }
 
-  /**
-   * Setup periodic updates (AI moves, etc)
-   */
   private setupUpdateInterval(): void {
     this.updateInterval = setInterval(() => {
-      // Handle AI moves
       for (const [gameId, room] of this.games) {
         if (room.isAIGame && room.ai && !room.game.isGameFinished()) {
           const input = room.ai.getNextInput(room.game.getState())
@@ -595,7 +513,6 @@ export class PongWebSocketServer {
         }
       }
 
-      // Clean up finished games
       for (const [gameId, room] of this.games) {
         if (
           room.status === 'finished' &&
@@ -608,12 +525,9 @@ export class PongWebSocketServer {
           this.games.delete(gameId)
         }
       }
-    }, 50) // Update AI every 50ms
+    }, 50)
   }
 
-  /**
-   * Save game to database
-   */
   private async saveGameToDatabase(
     gameId: string,
     state: any,
@@ -639,7 +553,6 @@ export class PongWebSocketServer {
         },
       })
 
-      // Save game results for both players
       await prisma.gameResult.createMany({
         data: [
           {
@@ -659,7 +572,6 @@ export class PongWebSocketServer {
         ],
       })
 
-      // Update user statistics
       await Promise.all([
         this.updateUserStats(state.players[0].id, state.score[0], state.score[1]),
         this.updateUserStats(state.players[1].id, state.score[1], state.score[0]),
@@ -669,9 +581,6 @@ export class PongWebSocketServer {
     }
   }
 
-  /**
-   * Update user game statistics
-   */
   private async updateUserStats(
     userId: string,
     playerScore: number,
@@ -698,16 +607,10 @@ export class PongWebSocketServer {
     })
   }
 
-  /**
-   * Generate unique game ID
-   */
   private generateGameId(): string {
     return `game-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   }
 
-  /**
-   * Get server stats
-   */
   public getStats() {
     return {
       onlinePlayers: this.onlinePlayers.size,
@@ -720,9 +623,6 @@ export class PongWebSocketServer {
     }
   }
 
-  /**
-   * Stop server
-   */
   public stop(): void {
     if (this.updateInterval) {
       clearInterval(this.updateInterval)
@@ -731,7 +631,6 @@ export class PongWebSocketServer {
   }
 }
 
-// Export server factory
 export function createWebSocketServer(port?: number): PongWebSocketServer {
   return new PongWebSocketServer(port)
 }

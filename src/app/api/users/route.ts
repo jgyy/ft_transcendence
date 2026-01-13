@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { Prisma } from '@prisma/client'
 
 /**
  * GET /api/users - List all users with pagination and search
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Build search query
-    const where = search
+    const where: Prisma.UserWhereInput = search
       ? {
           OR: [
             { username: { contains: search, mode: 'insensitive' } },

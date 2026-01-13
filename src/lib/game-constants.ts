@@ -79,6 +79,97 @@ export const DEFAULT_GAME_SETTINGS = {
   soundEnabled: true,
 } as const
 
+export const BALL_SPEED_MULTIPLIERS: Record<number, number> = {
+  1: 0.6,
+  2: 0.8,
+  3: 1.0,
+  4: 1.2,
+  5: 1.4,
+} as const
+
+export const BALL_SIZE_MULTIPLIERS: Record<number, number> = {
+  1: 0.8,
+  2: 0.9,
+  3: 1.0,
+  4: 1.1,
+  5: 1.2,
+} as const
+
+export const PADDLE_SPEED_MULTIPLIERS: Record<number, number> = {
+  1: 0.7,
+  2: 0.85,
+  3: 1.0,
+  4: 1.15,
+  5: 1.3,
+} as const
+
+export const PADDLE_SIZE_MULTIPLIERS: Record<number, number> = {
+  1: 0.6,
+  2: 0.8,
+  3: 1.0,
+  4: 1.2,
+  5: 1.4,
+} as const
+
+export const POWER_UP_EFFECTS = {
+  SPEED_BOOST: {
+    duration: 5000,
+    ballSpeedMultiplier: 1.5,
+    description: 'Increases ball speed by 50%'
+  },
+  PADDLE_EXTEND: {
+    duration: 7000,
+    paddleSizeMultiplier: 1.5,
+    description: 'Increases paddle size by 50%'
+  },
+  SLOW_BALL: {
+    duration: 5000,
+    ballSpeedMultiplier: 0.6,
+    description: 'Decreases ball speed by 40%'
+  },
+  MULTI_BALL: {
+    duration: 8000,
+    ballCount: 2,
+    description: 'Creates an additional ball'
+  },
+  FREEZE: {
+    duration: 3000,
+    freezeOpponent: true,
+    description: 'Freezes opponent paddle for 3 seconds'
+  }
+} as const
+
+export const THEME_COLORS = {
+  classic: {
+    background: '#1a1a1a',
+    foreground: '#ffffff',
+    paddle: '#00ff00',
+    ball: '#ffff00',
+    ui: '#00ff00'
+  },
+  neon: {
+    background: '#0a0e27',
+    foreground: '#ff006e',
+    paddle: '#00f5ff',
+    ball: '#ff006e',
+    ui: '#00f5ff'
+  },
+  retro: {
+    background: '#2c3e50',
+    foreground: '#ecf0f1',
+    paddle: '#3498db',
+    ball: '#e74c3c',
+    ui: '#2ecc71'
+  },
+  space: {
+    background: '#0b1929',
+    foreground: '#7dd3fc',
+    paddle: '#06b6d4',
+    ball: '#fbbf24',
+    ui: '#06b6d4'
+  }
+} as const
+
 export const COLLISION_PADDING = 2
 
 export const FRICTION = 0.99

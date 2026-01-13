@@ -11,9 +11,6 @@ const createGameSchema = z.object({
   settings: z.object({}).optional(),
 })
 
-/**
- * GET /api/games - List user's games
- */
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -32,7 +29,6 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
-    // Build query
     const where: any = {
       OR: [
         { playerOneId: session.user.id },
@@ -44,7 +40,6 @@ export async function GET(request: NextRequest) {
       where.status = status
     }
 
-    // Get games
     const [games, total] = await Promise.all([
       prisma.game.findMany({
         where,
@@ -98,9 +93,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST /api/games - Create a new game
- */
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -124,7 +116,6 @@ export async function POST(request: NextRequest) {
 
     const { mode, opponentId, settings } = validation.data
 
-    // Validate opponent exists if multiplayer
     if (mode === 'MULTIPLAYER' && !opponentId) {
       return NextResponse.json(
         { success: false, error: 'Opponent ID required for multiplayer' },
@@ -145,7 +136,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create game
     const game = await prisma.game.create({
       data: {
         playerOneId: session.user.id,
