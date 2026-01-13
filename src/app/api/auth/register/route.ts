@@ -3,7 +3,6 @@ import { prisma } from '@/lib/prisma'
 import { hashPassword, isValidEmail, isValidUsername } from '@/lib/utils'
 import { z } from 'zod'
 
-// Validation schema
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
   username: z.string().min(3).max(20),
@@ -18,7 +17,6 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    // Validate input
     const validation = registerSchema.safeParse(body)
     if (!validation.success) {
       return NextResponse.json(
@@ -32,7 +30,6 @@ export async function POST(request: NextRequest) {
 
     const { email, username, password } = validation.data
 
-    // Additional validation
     if (!isValidEmail(email)) {
       return NextResponse.json(
         { success: false, error: 'Invalid email format' },
@@ -50,7 +47,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if email already exists
     const existingEmail = await prisma.user.findUnique({
       where: { email },
     })
@@ -62,7 +58,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if username already exists
     const existingUsername = await prisma.user.findUnique({
       where: { username },
     })
@@ -74,10 +69,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Hash password
     const hashedPassword = await hashPassword(password)
 
-    // Create user
     const user = await prisma.user.create({
       data: {
         email,
