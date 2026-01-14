@@ -13,7 +13,6 @@ export function TournamentBracket({ bracket }: TournamentBracketProps) {
     <div className="bg-gray-800 rounded-lg shadow-lg p-6 overflow-x-auto">
       <h2 className="text-2xl font-bold text-white mb-6">Tournament Bracket</h2>
 
-      {/* Bracket Visualization */}
       <div className="flex gap-8 min-w-max">
         {bracket.rounds.map((round, roundIndex) => (
           <div key={roundIndex} className="flex flex-col justify-center gap-8">
@@ -56,11 +55,10 @@ export function TournamentBracket({ bracket }: TournamentBracketProps) {
                 <div className="p-4 space-y-3">
                   {/* Player 1 */}
                   <div
-                    className={`flex items-center justify-between p-2 rounded ${
-                      match.winner?.id === match.player1?.id
+                    className={`flex items-center justify-between p-2 rounded ${match.winner?.id === match.player1?.id
                         ? 'bg-green-600 bg-opacity-20'
                         : 'bg-gray-600 bg-opacity-50'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       {match.player1?.avatarUrl && (
@@ -74,8 +72,8 @@ export function TournamentBracket({ bracket }: TournamentBracketProps) {
                         {match.player1?.username || 'TBD'}
                       </span>
                     </div>
-                      <span className="text-lg font-bold text-yellow-400 ml-2">
-                      </span>
+                    <span className="text-lg font-bold text-yellow-400 ml-2">
+                    </span>
                     )}
                   </div>
 
@@ -84,11 +82,10 @@ export function TournamentBracket({ bracket }: TournamentBracketProps) {
 
                   {/* Player 2 */}
                   <div
-                    className={`flex items-center justify-between p-2 rounded ${
-                      match.winner?.id === match.player2?.id
+                    className={`flex items-center justify-between p-2 rounded ${match.winner?.id === match.player2?.id
                         ? 'bg-green-600 bg-opacity-20'
                         : 'bg-gray-600 bg-opacity-50'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       {match.player2?.avatarUrl && (
@@ -102,8 +99,8 @@ export function TournamentBracket({ bracket }: TournamentBracketProps) {
                         {match.player2?.username || 'TBD'}
                       </span>
                     </div>
-                      <span className="text-lg font-bold text-yellow-400 ml-2">
-                      </span>
+                    <span className="text-lg font-bold text-yellow-400 ml-2">
+                    </span>
                     )}
                   </div>
                 </div>

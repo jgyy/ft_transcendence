@@ -4,6 +4,7 @@ import { PongGame, PongAI, GameInput, GameMode } from './game'
 import { prisma } from '@/lib/prisma'
 import jwt from 'jsonwebtoken'
 import { DEFAULT_GAME_SETTINGS } from '@/lib/game-constants'
+import { ChatHandler } from './handlers/chatHandler'
 
 interface AuthSocket extends Socket {
   userId?: string
@@ -37,6 +38,7 @@ export class PongWebSocketServer {
   private gameQueue: Map<string, QueueEntry> = new Map()
   private onlinePlayers: Set<string> = new Set()
   private updateInterval: NodeJS.Timeout | null = null
+  private chatHandler: ChatHandler
 
   constructor(port: number = 3001) {
     const httpServer = createServer()
@@ -49,6 +51,8 @@ export class PongWebSocketServer {
       },
       transports: ['websocket', 'polling'],
     })
+
+    this.chatHandler = new ChatHandler(this.io)
 
     this.setupMiddleware()
     this.setupEventHandlers()
@@ -147,6 +151,9 @@ export class PongWebSocketServer {
       socket.on('tournament:leave', (data) => {
         this.handleTournamentLeave(socket, data)
       })
+
+      // Setup chat event listeners
+      this.chatHandler.setupChatListeners(socket)
 
       socket.on('disconnect', () => {
         this.handleDisconnect(socket)
